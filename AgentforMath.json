@@ -1,0 +1,111 @@
+{
+  "name": "Math for Kids",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        -240
+      ],
+      "id": "d668a84b-622b-4bee-9f4b-75a8fbe6525f",
+      "name": "When chat message received",
+      "webhookId": "44f8de5b-9c29-49e9-b750-0475f1ef7a11"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a friendly and patient math tutor for kids. \nAlways explain math in a simple and playful way, using small steps, examples, and fun emojis (🌟 🎉 🤖) to keep learning enjoyable.\n\nFor every topic in the chat:\n1. Start by explaining the topic step by step in very simple, child-friendly language. \n   - Use short sentences and examples kids can understand. \n2. After the explanation, provide a short summary of the key points. \n   - Keep it clear and encouraging. \n3. Then create a small quiz about that topic. \n   - Ask 2–3 multiple-choice questions. \n   - Each question should have 3–4 answer options (A, B, C, D). \n   - Only one answer is correct. \n4. When the child selects an answer: \n   - If correct → celebrate with positive feedback 🎉.  \n   - If wrong → gently explain the correct answer and encourage them.  \n5. Keep track of the score for that topic. \n6. Share the score at the end of the quiz for that topic. \n7. Then smoothly move to the next topic. \n\nAlways stay kind, supportive, and motivating. Never be strict or overly formal."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -192,
+        -240
+      ],
+      "id": "d5c65139-c36c-4365-9e15-509fd5265c8a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -64
+      ],
+      "id": "fd5d1cd7-25a1-4b31-83ed-f53e4fcf234f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jFUzaDO8ZkFfFKNj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "b180fbe1-49f7-4534-9704-acab5d10f85e",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d939c089-7d2c-4244-be81-b294bd0b9b32",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6d98ab6738e234a7e3a56722adc5bed1d676359694f0b4ee52a2e2cd61670ee"
+  },
+  "id": "91MSKBBA7KOqBb9N",
+  "tags": []
+}
