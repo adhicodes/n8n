@@ -1,0 +1,250 @@
+{
+  "name": "Posting Images in FB",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        0
+      ],
+      "id": "3fd9d407-cd4b-4cc5-b6db-4dbaecf80992",
+      "name": "When chat message received",
+      "webhookId": "1dcfe8ef-70ca-4190-946d-a249ba98bf54"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a flyer/poster design agent.\nYour task is to create high-quality, visually appealing flyers based on the user’s request.\n\nIf the user specifies an event type (e.g., movie night flyer, birthday party flyer, concert flyer), generate a flyer design that matches the theme.\n\nAlways include the key details: event name, date, time, and location.\n\nStyle and design should reflect the theme of the event (e.g., dark cinematic style for a movie night, festive for a birthday, musical vibe for a concert).\n\nEnsure the final flyer is professional, eye-catching, and ready to share on social media or print."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        0
+      ],
+      "id": "e50f0435-7794-4364-b68b-20f5156ed102",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        224
+      ],
+      "id": "bef17c73-2ab8-4a62-be55-07576b1d8b8b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nYMPaQVxCu3ukoie",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-exp-image-generation",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-exp-image-generation"
+        },
+        "prompt": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "04d2d760-f1e1-44d8-9f02-67347da14596",
+      "name": "Generate an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nYMPaQVxCu3ukoie",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "=image{{$execution.id}}.png\n",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1NDI1y3C9PRWqW7oN0M3WoXXRUukCGkSj",
+          "mode": "list",
+          "cachedResultName": "n8n-images",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1NDI1y3C9PRWqW7oN0M3WoXXRUukCGkSj"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        80,
+        0
+      ],
+      "id": "4422bc99-f22d-4597-9c38-e09b4a0b7d16",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vY4E3XmUOBZ5ZDgA",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        240,
+        0
+      ],
+      "id": "5177f27b-1796-4f03-9ede-0daa2553508e",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "vY4E3XmUOBZ5ZDgA",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "hostUrl": "graph-video.facebook.com",
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "491305090740021",
+        "edge": "photos",
+        "sendBinaryData": true,
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "e41d96d5-f9af-48d7-b086-f55517b5b78f",
+      "name": "Posting to FB",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "oBCV5Yugu230M5PB",
+          "name": "Facebook Graph account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Posting to FB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Posting to FB": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "011899d9-f427-4063-aa26-004be6477390",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4a85a4bb18a795f58665538971570bdebb51ef7c67881908a82680df0b3e2cbb"
+  },
+  "id": "Mbwe0MgXApdCIQUp",
+  "tags": []
+}
